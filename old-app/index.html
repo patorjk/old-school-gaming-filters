@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Old School Gaming Filters</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <style>
+      /* Remove the navbar's default margin-bottom and rounded borders */
+      .navbar {
+          margin-bottom: 0;
+          border-radius: 0;
+      }
+
+      /* Add a gray background color and some padding to the footer */
+      footer {
+          background-color: transparent;
+          margin-top:30px;
+      }
+
+      .carousel-inner img {
+          width: 100%; /* Set width to 100% */
+          margin: auto;
+          min-height:200px;
+      }
+
+
+
+      .ctrl-label {
+          margin-top:10px;
+          font-weight:bold;
+      }
+
+      .canContainer {
+          overflow: auto;
+          max-height:200px;
+      }
+
+      .strokeme
+      {
+          color: white;
+          text-shadow:
+                  -1px -1px 0 #000,
+                  1px -1px 0 #000,
+                  -1px 1px 0 #000,
+                  1px 1px 0 #000;
+      }
+
+      /* Hide the carousel text when the screen is less than 600 pixels wide */
+      @media (max-width: 600px) {
+          .carousel-caption {
+              display: none;
+          }
+      }
+
+      #inputResizedCanvas, #refImageCanvas {
+          position:absolute;
+          top: -10000px;
+          image-rendering: pixelated;
+      }
+      img, canvas {
+          image-rendering: auto;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
+
+          image-rendering: optimizeSpeed;             /* Older versions of FF          */
+          image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+          image-rendering: -webkit-optimize-contrast; /* Safari                        */
+          image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+          image-rendering: pixelated;                 /* Awesome future-browsers       */
+          -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+      }
+      #inputImageContainer {
+          display: none;
+      }
+      .ui-ctrl {
+          margin-bottom: 20px;
+      }
+
+
+  </style>
+</head>
+<body>
+<canvas id="refImageCanvas"></canvas>
+<canvas id="inputResizedCanvas"></canvas>
+
+<div class="wrapper">
+  <div class="container text-center">
+    <h2>Old School Gaming Filters</h2><br>
+    <div class="row">
+
+      <div class="col-sm-4"></div>
+
+      <div class="col-sm-4">
+
+        <div class="ui-ctrl">
+          <label>Image to Process
+            <input type="file" id="imageLoaderInput" name="imageLoaderInput"/>
+          </label>
+
+          <div id="inputImageContainer" class="canContainer">
+            <canvas id="inputImageCanvas" style="xdisplay:none;xposition:absolute;"></canvas>
+          </div>
+        </div>
+
+        <div class="ui-ctrl">
+          <label>Filter Type
+            <select id="ditheringType" class="form-control">
+              <option value="appleII">Apple II</option>
+              <option value="game_boy_camera">Game Boy Camera</option>
+
+              <option value="game_boy_screen_ordered">Game Boy Screen (Ordered Dither)</option>
+              <option value="game_boy_screen_floyd" selected>Game Boy Screen (Floyd-Steinberg Dither)</option>
+
+              <option value="nes">NES</option>
+              <!--
+              <option value="nes_restricted" selected>NES (restrict to 13 colors)</option>
+              -->
+              <option value="virtual_boy">Virtual Boy</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="ui-ctrl">
+          <label>Output Image Size
+            <select id="outputSize" class="form-control">
+              <option value="gameConsoleResolution" selected>Game console resolution</option>
+              <option value="sameAsInput">Resize afterwards to input size</option>
+              <option value="sameAsInputAndProcess">Process at input size (unrealistic high res)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="ui-ctrl">
+          <label>
+            <input type="checkbox" id="dithering" checked>
+            Dither Result
+          </label>
+        </div>
+
+
+        <button type="button" class="btn btn-primary" id="createImageBtn">Create!</button>
+      </div>
+
+      <div class="col-sm-4"></div>
+
+    </div>
+
+
+  </div><br>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="outModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Results</h4>
+      </div>
+      <div class="modal-body">
+        <div style="overflow:auto;max-height:800px;" id="canOutput">
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="#" class="btn btn-primary" id="saveImageBtn" onclick="downloadOut()">Save</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">About / Help</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          This app takes an input image and transforms it into what it may have looked like on an old gaming console. <strong>Output Image Size</strong> options explained:
+        </p>
+        <ul>
+          <li>
+            Game console resolution - Resizes input so it would fit inside the old gaming console's resolution, then processes images.
+          </li>
+          <li>
+            Resize afterwards to input size - Resizes input so it would fit inside the old gaming console's resolution, then processes images, then resizes image back to its original size.
+          </li>
+          <li>
+            Process at input size - Processes input image without resizing. This could lead to an output image that would be larger than the resolution of the original gaming device.
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="container-fluid text-center">
+  <a href="#" data-toggle="modal" data-target="#aboutModal">about + help</a>
+  <div style="display:inline-block;margin:0 8px;">&bull;</div>
+  <a href="http://patorjk.com/">patorjk.com</a>
+</footer>
+
+
+<script src="./lib/gfilterapp.js"></script>
+<script src="./node_modules/rgbquant/src/rgbquant.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3312460-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
