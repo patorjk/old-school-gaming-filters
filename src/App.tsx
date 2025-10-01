@@ -50,6 +50,10 @@ function App() {
     }
   }, [inputImage, filterName, dither]);
 
+  const goHome = () => {
+    window.location.href = "https://patorjk.com/";
+  };
+
   /*
                     <option value={"game_boy_screen_ordered"}>
                     Game Boy Screen (Ordered Dither)
@@ -59,7 +63,7 @@ function App() {
   return (
     <div className={`min-h-screen p-8 transition-colors duration-300 w-full`}>
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 pt-2">
           <h1 className={`text-5xl font-bold `}>Old School Gaming Filters</h1>
           <p className={`text-lg`}>
             Creates a version of an image for an old school gaming console
@@ -110,6 +114,25 @@ function App() {
               </label>
             </div>
           </div>
+        </div>
+
+        <div className="mt-12 nes-container with-title">
+          <p className={`title`}>Options</p>
+          <div className={"flex flex-col gap-8 text-left"}>
+            This app takes in an image and then transforms it into a version
+            that could be displayed on an old school gaming console. It does
+            this by reducing the number of colors in the image and then
+            re-coloring the image to match the console's palette. It also sizes
+            the image to the resolution used by the particular console. If the
+            dithering option is enabled, a dithering algorithm is applied to
+            make the image more legible.
+          </div>
+        </div>
+
+        <div className="mt-12 ">
+          <button className="nes-btn is-primary" onClick={goHome}>
+            Home
+          </button>
         </div>
       </div>
     </div>
