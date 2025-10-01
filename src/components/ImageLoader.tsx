@@ -1,15 +1,16 @@
-import { Upload } from "lucide-react";
 import UploadIcon from "../assets/upload_svg.svg?react";
 import React, { useState } from "react";
 
 interface ImageLoaderProps {
   image: string | null;
+  inputImage: string | null;
   handleImageUpload: (file: File) => void;
   handleClearImage: () => void;
 }
 
 const ImageLoader = ({
   image,
+  inputImage,
   handleImageUpload,
   handleClearImage,
 }: ImageLoaderProps) => {
@@ -41,9 +42,18 @@ const ImageLoader = ({
     }
   };
 
+  const handleDownload = () => {
+    if (!image) return;
+
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "image.png"; // Set desired filename
+    link.click();
+  };
+
   return (
     <>
-      {!image ? (
+      {!inputImage ? (
         <div
           className={`mb-8 relative border-3 border-dashed p-16 text-center transition-all ${
             dragActive
@@ -74,20 +84,42 @@ const ImageLoader = ({
             Choose File
           </label>
         </div>
+      ) : typeof image === "string" ? (
+        <>
+          <div className={`nes-container with-title `}>
+            <p className={`title`}>Result</p>
+            <button
+              onClick={handleClearImage}
+              className={`absolute top-[-4px] right-[-4px] z-10 p-2 px-[10px] text-black dark:text-white bg-white dark:bg-black hover:opacity-80 transition-opacity`}
+            >
+              X
+            </button>
+            <div className={"flex justify-center items-center"}>
+              <img
+                src={image}
+                alt="Uploaded"
+                className="w-auto h-auto align-self justify-self"
+              />
+            </div>
+            <div className={"pt-6"}>
+              <button
+                type="button"
+                className="nes-btn"
+                onClick={handleDownload}
+              >
+                Download
+              </button>
+            </div>
+          </div>
+        </>
       ) : (
-        <div className={`nes-container with-title `}>
-          <p className={`title`}>Result</p>
-          <button
-            onClick={handleClearImage}
-            className={`absolute top-[-4px] right-[-4px] z-10 p-2 px-[10px] text-black dark:text-white bg-white dark:bg-black hover:opacity-80 transition-opacity`}
-          >
-            X
-          </button>
-          <img
-            src={image}
-            alt="Uploaded"
-            className="w-auto h-auto align-self justify-self"
-          />
+        <div>
+          <progress
+            className="nes-progress is-success"
+            value="50"
+            max="100"
+          ></progress>
+          <div>One moment please...</div>
         </div>
       )}
     </>
