@@ -65,9 +65,7 @@ function App() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 pt-2">
           <h1 className={`text-5xl font-bold `}>Old School Gaming Filters</h1>
-          <p className={`text-lg`}>
-            Creates a version of an image for an old school gaming console
-          </p>
+          <p className={`text-lg`}>Give your images a retro console makeover</p>
         </div>
         <ImageLoader
           image={image}
@@ -117,7 +115,7 @@ function App() {
         </div>
 
         <div className="mt-12 nes-container with-title">
-          <p className={`title`}>Options</p>
+          <p className={`title`}>About</p>
           <div className={"flex flex-col gap-8 text-left"}>
             This app takes in an image and then transforms it into a version
             that could be displayed on an old school gaming console. It does

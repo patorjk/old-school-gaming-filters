@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/imageloader.tsx","./src/components/theme/themeprovider.tsx","./src/components/theme/themeprovidercontext.ts","./src/components/theme/usetheme.ts","./src/utils/create-image.ts","./src/utils/filter-types.ts","./src/utils/nes-palette.ts","./types/rgbquant.d.ts"],"errors":true,"version":"5.8.3"}
