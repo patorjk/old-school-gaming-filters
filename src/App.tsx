@@ -9,6 +9,12 @@ function App() {
   const [filterName, setFilterName] = useState<string>("nes");
   const [dither, setDither] = useState<boolean>(true);
 
+  const [outputSize, setOutputSize] = useState("gameConsoleResolution");
+
+  const handleOutputSizeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setOutputSize(e.target.value);
+  };
+
   const handleFilterNameChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setFilterName(e.target.value);
   };
@@ -37,7 +43,7 @@ function App() {
       const img = new Image();
       img.onload = () => {
         const doWork = async () => {
-          const canvas = await createImage(filterName, img, dither);
+          const canvas = await createImage(filterName, img, dither, outputSize);
           if (!canvas) {
             return;
           }
@@ -48,7 +54,7 @@ function App() {
       };
       img.src = inputImage;
     }
-  }, [inputImage, filterName, dither]);
+  }, [inputImage, filterName, dither, outputSize]);
 
   const goHome = () => {
     window.location.href = "https://patorjk.com/";
@@ -77,7 +83,7 @@ function App() {
           <p className={`title`}>Options</p>
           <div className={"flex flex-col gap-8"}>
             <div className={"text-left"}>
-              <label htmlFor="default_select">Game System</label>
+              <label htmlFor="game_system">Game System</label>
               <div className="nes-select">
                 <select
                   required
@@ -95,6 +101,29 @@ function App() {
                 </select>
               </div>
             </div>
+
+            <div className={"text-left"}>
+              <label htmlFor="outputSize">Output Image Size</label>
+              <div className="nes-select">
+                <select
+                  required
+                  id="outputSize"
+                  value={outputSize}
+                  onChange={handleOutputSizeChange}
+                >
+                  <option value={"gameConsoleResolution"}>
+                    Game Console Resolution
+                  </option>
+                  <option value={"sameAsInput"}>
+                    Resize Afterwards to Input Size
+                  </option>
+                  <option value={"sameAsInputAndProcess"}>
+                    Process at Input Size (unrealistic high res)
+                  </option>
+                </select>
+              </div>
+            </div>
+
             <div
               className={`text-left ${noDitherList.indexOf(filterName) !== -1 ? "opacity-40" : ""}`}
             >

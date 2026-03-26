@@ -10,6 +10,7 @@ function typeOf(val: unknown): string {
 function drawPixels(
   inputImage: HTMLImageElement,
   idxi8: Uint8ClampedArray<ArrayBufferLike>,
+  outputSize: string = "gameConsoleResolution",
   width0: number,
   width1?: number,
 ) {
@@ -48,8 +49,10 @@ function drawPixels(
   ctx.putImageData(imgd, 0, 0);
 
   // resize back to proper size
-  can2.width = inputImage.width;
-  can2.height = inputImage.height;
+  if (outputSize === "sameAsInput") {
+    can2.width = inputImage.width;
+    can2.height = inputImage.height;
+  }
 
   ctx2.imageSmoothingEnabled = false;
   ctx2.drawImage(can, 0, 0, can2.width, can2.height);
@@ -67,6 +70,7 @@ export const createImage = async (
   filterName: string,
   inputImage: HTMLImageElement,
   ditheringOn: boolean = true,
+  outputSize: string = "gameConsoleResolution",
 ) => {
   const filterType = { ...filterTypes[filterName] };
 
@@ -146,6 +150,11 @@ export const createImage = async (
       //console.log("new height:" + newH);
       //console.log("draw resized input");
 
+      if (outputSize === "sameAsInputAndProcess") {
+        newW = inputImage.width;
+        newH = inputImage.height;
+      }
+
       inputResizedCanvas.width = newW;
       inputResizedCanvas.height = newH;
 
@@ -183,7 +192,7 @@ export const createImage = async (
 
       const out = q2.reduce(inputCanvas, 1, ditheringType);
 
-      const pcan = drawPixels(inputImage, out, inputCanvas.width); //1920
+      const pcan = drawPixels(inputImage, out, outputSize, inputCanvas.width); //1920
       pcan.setAttribute("id", "outCan");
 
       return pcan;
